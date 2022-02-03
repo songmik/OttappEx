@@ -1,10 +1,16 @@
 package com.example.a19_ottapp
 
+import android.app.Activity
+import android.content.Context
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.Transition
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.a19_ottapp.databinding.ActivityMainBinding
@@ -104,27 +110,49 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMotionLayoutListeners(){
-        binding.gatheringDigitalThingsMotionLayout.setTransitionListener(object: Transition.TransitionListener{
-            override fun onTransitionStart(p0: Transition?) {
-                TODO("Not yet implemented")
+        binding.gatheringDigitalThingsMotionLayout.setTransitionListener(object: MotionLayout.TransitionListener {
+            override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {
+                isGateringMotionAnimating = true
             }
 
-            override fun onTransitionEnd(p0: Transition?) {
-                TODO("Not yet implemented")
+            override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) = Unit
+
+            override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+                isGateringMotionAnimating = false
             }
 
-            override fun onTransitionCancel(p0: Transition?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTransitionPause(p0: Transition?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTransitionResume(p0: Transition?) {
-                TODO("Not yet implemented")
-            }
-
+            override fun onTransitionTrigger(motionLayout: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) = Unit
         })
+
+        binding.curationAnimationMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener{
+            override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) = Unit
+
+            override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) = Unit
+
+            override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+                when (currentId) {
+                    R.id.curation_animation_end1 -> {
+                        binding.curationAnimationMotionLayout.setTransition(R.id.curation_animation_start2, R.id.curation_animation_end2)
+                        binding.curationAnimationMotionLayout.transitionToEnd()
+                    }
+                }
+            }
+
+            override fun onTransitionTrigger(motionLayout: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) = Unit
+        })
+    }
+}
+
+fun Float.adToPx(context: Context): Float =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, context.resources.displayMetrics)
+
+fun Activity.makeStatusBarTransparent(){
+    with(window) {
+        decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        statusBarColor = Color.TRANSPARENT
+
     }
 }
