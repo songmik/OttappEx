@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.transition.Transition
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity() {
             val topPadding = 300f.dpToPx(this)
             val realAlphaScrollHeight = appBarLayout.measuredHeight - appBarLayout.totalScrollRange
             val abstractOffset = abs(verticalOffset)
-
             val reapAlphaVerticalOffset = if(abstractOffset - topPadding < 0) 0f else abstractOffset - topPadding
 
             if(abstractOffset < topPadding){
@@ -56,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initActionBar() = with(binding) {
         toolbar.navigationIcon = null
-        toolbar.setContentInsetAbsolute(0,0)
+        toolbar.setContentInsetsAbsolute(0,0)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.let {
             it.setHomeButtonEnabled(false)
@@ -69,10 +67,10 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(coordinator) { v: View, insets: WindowInsetsCompat ->
             val params = v.layoutParams as ViewGroup.MarginLayoutParams
             params.bottomMargin = insets.systemWindowInsetBottom
-            toolbarContainer.layoutParams = (toolbarConrainer.layoutParams as ViewGroup.MarginLayoutParams).apply {
+            toolbarContainer.layoutParams = (toolbarContainer.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 setMargins(0,insets.systemWindowInsetTop,0,0)
             }
-            collapsingToolbarContainer.layoutParams = (collapsingRoolbrContainer.layoutParams as ViewGroup.MarginLayoutParams).apply {
+            collapsingToolbarContainer.layoutParams = (collapsingToolbarContainer.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 setMargins(0,0,0,0)
             }
             insets.consumeSystemWindowInsets()
@@ -86,10 +84,10 @@ class MainActivity : AppCompatActivity() {
             val scrolledValue = binding.scrollView.scrollY
 
             if(scrolledValue > 150f.dpToPx(this@MainActivity).toInt()){
-                if(!isGateringMotionAnimating){
+                if(isGateringMotionAnimating.not()){
                     binding.gatheringDigitalThingsBackgroundMotionLayout.transitionToEnd()
                     binding.gatheringDigitalThingsMotionLayout.transitionToEnd()
-                    binding.buttonShowMotionLayout.transitionToEnd()
+                    binding.buttonShownMotionLayout.transitionToEnd()
                 }
             } else {
                 if (isGateringMotionAnimating.not()){
@@ -143,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun Float.adToPx(context: Context): Float =
+fun Float.dpToPx(context: Context): Float =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, context.resources.displayMetrics)
 
 fun Activity.makeStatusBarTransparent(){
